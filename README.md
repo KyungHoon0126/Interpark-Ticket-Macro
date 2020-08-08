@@ -1,2 +1,2 @@
 # Interpark-Ticket-Macro
-Interpark Ticket 매크로 프로그램입니다.
+> Interpark Ticket 매크로 프로그램입니다.
