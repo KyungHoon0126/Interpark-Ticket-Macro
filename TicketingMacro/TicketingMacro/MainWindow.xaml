@@ -6,7 +6,7 @@
         xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"  
         xmlns:local="clr-namespace:TicketingMacro"
         mc:Ignorable="d"
-        Title="Interpark" Height="450" Width="800">
+        Title="Interpark Ticketing Macro" Height="650" Width="900">
     
     <Grid>
         <Grid.ColumnDefinitions>
@@ -15,13 +15,27 @@
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0">
-            <WindowsFormsHost>
-                <wf:PictureBox/>
-            </WindowsFormsHost>
+            <Border Margin="5" BorderBrush="Black" BorderThickness="1">
+                <WindowsFormsHost>
+                    <wf:PictureBox x:Name="pbCaptureImg"/>
+                </WindowsFormsHost>
+            </Border>
         </Grid>
 
         <Grid Grid.Column="1">
-            
+            <StackPanel Margin="5">
+                <WindowsFormsHost Margin="5">
+                    <wf:ComboBox x:Name="cbTicketCnt" 
+                                 DropDownStyle="DropDownList"/>
+                </WindowsFormsHost>
+                
+                <WindowsFormsHost Margin="5">
+                    <wf:ComboBox x:Name="cbTicketGrade" 
+                                 DrawMode="OwnerDrawFixed"/>
+                </WindowsFormsHost>
+
+                <Button Margin="5" x:Name="btnMacroExecute" Click="btnMacroExecute_Click">실행하기</Button>
+            </StackPanel>
         </Grid>
     </Grid>
 </Window>
