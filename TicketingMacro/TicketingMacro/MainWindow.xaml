@@ -31,7 +31,8 @@
                 
                 <WindowsFormsHost Margin="5">
                     <wf:ComboBox x:Name="cbTicketGrade" 
-                                 DrawMode="OwnerDrawFixed"/>
+                                 DrawMode="OwnerDrawFixed"
+                                 DrawItem="cbTicketGrade_DrawItem"/>
                 </WindowsFormsHost>
 
                 <Button Margin="5" x:Name="btnMacroExecute" Click="btnMacroExecute_Click">실행하기</Button>
