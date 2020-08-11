@@ -22,11 +22,12 @@ namespace TicketingMacro
         #endregion
 
         #region TicketGradeColors
-        public System.Drawing.Color PurpleColor = System.Drawing.Color.FromArgb(255, 123, 104, 238);
-        public System.Drawing.Color DarkGreenColor = System.Drawing.Color.FromArgb(255, 28, 168, 20);
-        public System.Drawing.Color SkyBlueColor = System.Drawing.Color.FromArgb(255, 23, 179, 255);
-        public System.Drawing.Color OrangeColor = System.Drawing.Color.FromArgb(255, 251, 126, 78);
-        public System.Drawing.Color LightGreenColor = System.Drawing.Color.FromArgb(255, 160, 213, 63);
+        public Color PurpleColor = Color.FromArgb(255, 123, 104, 238);
+        public Color DarkGreenColor = Color.FromArgb(255, 28, 168, 20);
+        public Color SkyBlueColor = Color.FromArgb(255, 23, 179, 255);
+        public Color OrangeColor = Color.FromArgb(255, 251, 126, 78);
+        public Color LightGreenColor = Color.FromArgb(255, 160, 213, 63);
+        #endregion
         #endregion
 
         internal struct LpPos
@@ -34,7 +35,6 @@ namespace TicketingMacro
             public int DlgX;
             public int DlgY;
         }
-        #endregion
 
         IntPtr FindHwnd;
         Bitmap ConfirmImg = null;
@@ -127,7 +127,7 @@ namespace TicketingMacro
         private Bitmap GetScreen(IntPtr hWnd)
         {
             Graphics graphicsData = Graphics.FromHwnd(hWnd);
-            System.Drawing.Rectangle rectangle = System.Drawing.Rectangle.Round(graphicsData.VisibleClipBounds);
+            Rectangle rectangle = Rectangle.Round(graphicsData.VisibleClipBounds);
             Bitmap bmp = new Bitmap(rectangle.Width, rectangle.Height);
 
             using (Graphics graphic = Graphics.FromImage(bmp))
@@ -164,12 +164,12 @@ namespace TicketingMacro
         private void cbTicketGrade_DrawItem(object sender, DrawItemEventArgs e)
         {
             Graphics graphics = e.Graphics;
-            System.Drawing.Color color = new System.Drawing.Color();
-            System.Drawing.Rectangle rectangle = e.Bounds;
+            Color color = new Color();
+            Rectangle rectangle = e.Bounds;
 
             if(e.Index >= 0)
             {
-                string selectedGradeColor = ((System.Windows.Forms.ComboBox)sender).Items[e.Index].ToString();
+                string selectedGradeColor = ((ComboBox)sender).Items[e.Index].ToString();
                 Font font = new Font("Arial", 10, System.Drawing.FontStyle.Regular);
 
                 switch(selectedGradeColor)
@@ -191,15 +191,15 @@ namespace TicketingMacro
                         break;
                 }
 
-                System.Drawing.Brush brush = new SolidBrush(color);
+                Brush brush = new SolidBrush(color);
                 graphics.FillRectangle(brush, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
-                graphics.DrawString(selectedGradeColor, font, System.Drawing.Brushes.Black, rectangle.X, rectangle.Top);
+                graphics.DrawString(selectedGradeColor, font, Brushes.Black, rectangle.X, rectangle.Top);
             }
         }
 
-        private bool GetPixels(IntPtr hWnd, System.Drawing.Color selectedColor, Bitmap screenImg, int nx, int ny, int index)
+        private bool GetPixels(IntPtr hWnd, Color selectedColor, Bitmap screenImg, int nx, int ny, int index)
         {
-            System.Drawing.Color findColor;
+            Color findColor;
             int nCx = 0, nCy = 0;
 
             for (int y = 0; y < (screenImg.Height / 8); y++)
@@ -228,11 +228,10 @@ namespace TicketingMacro
             return false;
         }
 
-        private System.Drawing.Color SelectColor()
+        private Color SelectColor()
         {
             string str = cbTicketGrade.SelectedItem.ToString();
-
-            System.Drawing.Color color = new System.Drawing.Color();
+            Color color = new Color();
 
             switch(str)
             {
