@@ -1,28 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Forms;
-using System.Drawing;
+﻿using OpenCvSharp;
+using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Forms;
 
 namespace TicketingMacro
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : System.Windows.Window
     {
         #region Properties
         #region MouseEvents
@@ -62,20 +51,37 @@ namespace TicketingMacro
         {
             String tmp = "";
             Bitmap screenBmp;
+            int ticketCnt = 0; // Ticket Cnt Check
+            int ticketGrade = 0; // Ticket Grade Check
 
             tmp = "인터파크 티켓 - Chrome";
             FindHwnd = W32.FindWindow(null, tmp);
 
-            if(findHandle(FindHwnd) && cbTicketGrade.SelectedIndex >= 0)
+            ticketCnt = cbTicketCnt.SelectedIndex + 1;
+            ticketGrade = cbTicketGrade.SelectedIndex;
+
+            if(findHandle(FindHwnd) && ticketCnt > 0 && ticketGrade >= 0)
             {
                 GetHandlePos(FindHwnd);
                 System.Windows.Forms.Cursor.Position = new System.Drawing.Point(pPos.DlgX, pPos.DlgY);
                 screenBmp = GetScreen(FindHwnd);
 
-                if(true)
+                if (GetPixels(FindHwnd, SelectColor(), screenBmp, pPos.DlgX, pPos.DlgY, ticketCnt))
                 {
-
+                    SearchImg(screenBmp, ConfirmImg, pPos.DlgX, pPos.DlgY);
                 }
+            }
+            else if (ticketCnt <= 0)
+            {
+                System.Windows.Forms.MessageBox.Show("장수를 선택해주세요.");
+            }
+            else if (ticketGrade <= 0)
+            {
+                System.Windows.Forms.MessageBox.Show("색상을 선택해주세요.");
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("창을 찾을 수 없습니다.");
             }
         }
 
@@ -135,6 +141,12 @@ namespace TicketingMacro
             return bmp;
         }
 
+        public void lnClick(int x, int y)
+        {
+            System.Windows.Forms.Cursor.Position = new System.Drawing.Point(x, y);
+            W32.mouse_event(MOUSEEVENT_LEFTDOWN | MOUSEEVENT_LEFTUP, (uint)System.Windows.Forms.Cursor.Position.X, (uint)System.Windows.Forms.Cursor.Position.Y, 0, 0);
+        }
+
         private void Initial()
         {
             cbTicketCnt.Items.Add("1장");
@@ -182,6 +194,88 @@ namespace TicketingMacro
                 System.Drawing.Brush brush = new SolidBrush(color);
                 graphics.FillRectangle(brush, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
                 graphics.DrawString(selectedGradeColor, font, System.Drawing.Brushes.Black, rectangle.X, rectangle.Top);
+            }
+        }
+
+        private bool GetPixels(IntPtr hWnd, System.Drawing.Color selectedColor, Bitmap screenImg, int nx, int ny, int index)
+        {
+            System.Drawing.Color findColor;
+            int nCx = 0, nCy = 0;
+
+            for (int y = 0; y < (screenImg.Height / 8); y++)
+            {
+                for (int x = 0; x < (screenImg.Width / 8); x++)
+                {
+                    nCx = x * 8;
+                    nCy = y * 8;
+
+                    findColor = screenImg.GetPixel(nCx, nCy);
+
+                    if (findColor == selectedColor)
+                    {
+                        if(index > 0)
+                        {
+                            lnClick(nCx + nx, nCy + ny);
+                            index--;
+                        }
+                        else if (index == 0)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        private System.Drawing.Color SelectColor()
+        {
+            string str = cbTicketGrade.SelectedItem.ToString();
+
+            System.Drawing.Color color = new System.Drawing.Color();
+
+            switch(str)
+            {
+                case "보라색":
+                    color = PurpleColor;
+                    break;
+                case "진 초록색":
+                    color = DarkGreenColor;
+                    break;
+                case "하늘색":
+                    color = SkyBlueColor;
+                    break;
+                case "오렌지색":
+                    color = OrangeColor;
+                    break;
+                case "연두색":
+                    color = LightGreenColor;
+                    break;
+            }
+
+            return color;
+        }
+
+        private bool SearchImg(Bitmap screenImg, Bitmap findImg, int posX, int posY)
+        {
+            using (Mat screenMat = OpenCvSharp.Extensions.BitmapConverter.ToMat(screenImg))
+            using (Mat findMat = OpenCvSharp.Extensions.BitmapConverter.ToMat(findImg))
+            using (Mat res = screenMat.MatchTemplate(findMat, TemplateMatchModes.CCoeffNormed))
+            {
+                double minVal = 0, maxVal = 0;
+                OpenCvSharp.Point minLoc, maxLoc;
+                Cv2.MinMaxLoc(res, out minVal, out maxVal, out minLoc, out maxLoc);
+                Debug.WriteLine("Similarity Degree : " + maxVal);
+
+                if(maxVal >= 0.8)
+                {
+                    lnClick(maxLoc.X + posX + (findMat.Width / 2), maxLoc.Y + posY + (findMat.Height / 2));
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
     }

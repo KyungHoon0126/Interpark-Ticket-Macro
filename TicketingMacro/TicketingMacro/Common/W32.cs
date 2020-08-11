@@ -19,6 +19,6 @@ namespace TicketingMacro
         internal static extern bool PrintWindow(IntPtr hWnd, IntPtr hdcBlt, int nFlags);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-        public static extern void MouseEvent(uint dwFlags, uint dx, uint dy, uint cButtons, uint dwExtralInfo);
+        public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint cButtons, uint dwExtraInfo);
     }
 }

@@ -6,7 +6,7 @@
         xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"  
         xmlns:local="clr-namespace:TicketingMacro"
         mc:Ignorable="d"
-        Title="Interpark Ticketing Macro" Height="650" Width="900">
+        Title="Interpark Ticketing Macro" Height="700" Width="900">
     
     <Grid>
         <Grid.ColumnDefinitions>
