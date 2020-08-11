@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace TicketingMacro
 {
@@ -37,17 +39,100 @@ namespace TicketingMacro
         public System.Drawing.Color OrangeColor = System.Drawing.Color.FromArgb(255, 251, 126, 78);
         public System.Drawing.Color LightGreenColor = System.Drawing.Color.FromArgb(255, 160, 213, 63);
         #endregion
+
+        internal struct LpPos
+        {
+            public int DlgX;
+            public int DlgY;
+        }
         #endregion
+
+        IntPtr FindHwnd;
+        Bitmap ConfirmImg = null;
+        LpPos pPos = new LpPos();
 
         public MainWindow()
         {
             InitializeComponent();
             Initial();
+            ConfirmImg = new Bitmap(@"img\Confirm.PNG");
         }
 
         private void btnMacroExecute_Click(object sender, RoutedEventArgs e)
         {
-            
+            String tmp = "";
+            Bitmap screenBmp;
+
+            tmp = "인터파크 티켓 - Chrome";
+            FindHwnd = W32.FindWindow(null, tmp);
+
+            if(findHandle(FindHwnd) && cbTicketGrade.SelectedIndex >= 0)
+            {
+                GetHandlePos(FindHwnd);
+                System.Windows.Forms.Cursor.Position = new System.Drawing.Point(pPos.DlgX, pPos.DlgY);
+                screenBmp = GetScreen(FindHwnd);
+
+                if(true)
+                {
+
+                }
+            }
+        }
+
+        private Boolean findHandle(IntPtr hWnd)
+        {
+            if(hWnd != IntPtr.Zero)
+            {
+                Debug.WriteLine("Find Handle : " + hWnd.ToString());
+                System.Windows.Forms.MessageBox.Show("Handle을 찾았습니다.");
+                return true;
+            }
+            else
+            {
+                Debug.WriteLine("Not Find Handle");
+                System.Windows.Forms.MessageBox.Show("Handle을 못 찾았습니다.");
+                return false;
+            }
+        }
+
+        private void GetHandlePos(IntPtr hWnd)
+        {
+            System.Drawing.Point point = new System.Drawing.Point();
+            System.Drawing.Size size = new System.Drawing.Size();
+
+            GetWindowPos(hWnd, ref point, ref size);
+
+            pPos.DlgX = point.X;
+            pPos.DlgY = point.Y;
+        }
+
+        private void GetWindowPos(IntPtr hWnd, ref System.Drawing.Point point, ref System.Drawing.Size size)
+        {
+            WINDOWPLACEMENT placeMent = new WINDOWPLACEMENT();
+            placeMent.length = Marshal.SizeOf(placeMent);
+
+            W32.GetWindowPlacement(hWnd, ref placeMent);
+
+            size = new System.Drawing.Size(placeMent.normalPosition.Right - (placeMent.normalPosition.Left * 2),
+                                           placeMent.normalPosition.Bottom - (placeMent.normalPosition.Top * 2));
+            point = new System.Drawing.Point(placeMent.normalPosition.Left, placeMent.normalPosition.Top);
+        }
+
+        private Bitmap GetScreen(IntPtr hWnd)
+        {
+            Graphics graphicsData = Graphics.FromHwnd(hWnd);
+            System.Drawing.Rectangle rectangle = System.Drawing.Rectangle.Round(graphicsData.VisibleClipBounds);
+            Bitmap bmp = new Bitmap(rectangle.Width, rectangle.Height);
+
+            using (Graphics graphic = Graphics.FromImage(bmp))
+            {
+                IntPtr hdc = graphic.GetHdc();
+                W32.PrintWindow(hWnd, hdc, 0x2);
+                graphic.ReleaseHdc(hdc);
+            }
+
+            pbCaptureImg.Image = bmp;
+            return bmp;
         }
 
         private void Initial()
