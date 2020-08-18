@@ -1,5 +1,5 @@
 # Interpark-Ticket-Macro
-> Interpark Ticket 매크로 프로그램입니다.
+> Interpark Ticket 매크로 프로그램입니다. 완성형 매크로가 아닌 일부 과정만 매크로임을 밝힙니다.
 
 ## Stack
 ||Window|
