@@ -47,6 +47,20 @@ namespace TicketingMacro
             ConfirmImg = new Bitmap(@"img\Confirm.PNG");
         }
 
+        private void Initial()
+        {
+            cbTicketCnt.Items.Add("1장");
+            cbTicketCnt.Items.Add("2장");
+            cbTicketCnt.Items.Add("3장");
+            cbTicketCnt.Items.Add("4장");
+
+            cbTicketGrade.Items.Add("보라색");
+            cbTicketGrade.Items.Add("진 초록색");
+            cbTicketGrade.Items.Add("하늘색");
+            cbTicketGrade.Items.Add("오렌지색");
+            cbTicketGrade.Items.Add("연두색");
+        }
+
         private void btnMacroExecute_Click(object sender, RoutedEventArgs e)
         {
             String tmp = "";
@@ -60,7 +74,7 @@ namespace TicketingMacro
             ticketCnt = cbTicketCnt.SelectedIndex + 1;
             ticketGrade = cbTicketGrade.SelectedIndex;
 
-            if(findHandle(FindHwnd) && ticketCnt > 0 && ticketGrade >= 0)
+            if(FindHandle(FindHwnd) && ticketCnt > 0 && ticketGrade >= 0)
             {
                 GetHandlePos(FindHwnd);
                 System.Windows.Forms.Cursor.Position = new System.Drawing.Point(pPos.DlgX, pPos.DlgY);
@@ -73,11 +87,11 @@ namespace TicketingMacro
             }
             else if (ticketCnt <= 0)
             {
-                System.Windows.Forms.MessageBox.Show("장수를 선택해주세요.");
+                System.Windows.Forms.MessageBox.Show("티켓 장수를 선택해 주세요.");
             }
             else if (ticketGrade <= 0)
             {
-                System.Windows.Forms.MessageBox.Show("색상을 선택해주세요.");
+                System.Windows.Forms.MessageBox.Show("티켓 색상(등급)을 선택해 주세요.");
             }
             else
             {
@@ -85,7 +99,8 @@ namespace TicketingMacro
             }
         }
 
-        private Boolean findHandle(IntPtr hWnd)
+        #region Win32
+        private Boolean FindHandle(IntPtr hWnd)
         {
             if(hWnd != IntPtr.Zero)
             {
@@ -146,20 +161,7 @@ namespace TicketingMacro
             System.Windows.Forms.Cursor.Position = new System.Drawing.Point(x, y);
             W32.mouse_event(MOUSEEVENT_LEFTDOWN | MOUSEEVENT_LEFTUP, (uint)System.Windows.Forms.Cursor.Position.X, (uint)System.Windows.Forms.Cursor.Position.Y, 0, 0);
         }
-
-        private void Initial()
-        {
-            cbTicketCnt.Items.Add("1장");
-            cbTicketCnt.Items.Add("2장");
-            cbTicketCnt.Items.Add("3장");
-            cbTicketCnt.Items.Add("4장");
-
-            cbTicketGrade.Items.Add("보라색");
-            cbTicketGrade.Items.Add("진 초록색");
-            cbTicketGrade.Items.Add("하늘색");
-            cbTicketGrade.Items.Add("오렌지색");
-            cbTicketGrade.Items.Add("연두색");
-        }
+#endregion
 
         private void cbTicketGrade_DrawItem(object sender, DrawItemEventArgs e)
         {
