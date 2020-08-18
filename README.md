@@ -11,5 +11,8 @@
 ## UI / UX
 - Interpark-Ticket-Macro 실행 화면
 
+<img src="https://user-images.githubusercontent.com/48943501/90465534-84cbce00-e14a-11ea-8f8b-aa85a13be9a0.PNG" width="80%"></img>
+
+
 ## 개발 포스트
 - INFO, YOU(Tistory) [Win32 API를 활용한 인터파크 티켓팅 매크로 만들기 😀](https://devkyunghoon.tistory.com) (예정)
